@@ -1,0 +1,13 @@
+{
+  "root": "devdocs",
+  "title": "honestdocs · development documents",
+  "areas": {
+    "core": "The CLI: commands, derivation, checks, layouts",
+    "method": "The method, the guides for people and agents, the templates",
+    "rules": "Standing rules every change must keep — read before building, updated in place"
+  },
+  "trailer": "Doc",
+  "codeRepos": [
+    "."
+  ]
+}

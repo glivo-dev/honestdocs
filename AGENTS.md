@@ -1,0 +1,64 @@
+# honestdocs — rules for contributors
+
+Read once, apply always. These hold for people and AI agents alike.
+
+## The code
+
+- **Zero runtime dependencies.** honestdocs runs through `npx` in other people's
+  repositories; every dependency is one more thing to install, audit and trust. Node's
+  standard library is enough.
+- **Node 20+ and Bun.** Plain ESM `.mjs`. No `import.meta.dirname`, no Bun-only APIs.
+- **Windows, macOS and Linux.** Paths are joined with `node:path` and shown with `/`;
+  git is always asked with `core.quotepath=off` so non-ASCII filenames survive.
+- **Data on stdout, talk on stderr.** Every query command takes `--json`. Every command
+  answers `--help`. An unknown flag is an error, never ignored.
+- **Comments in English**, explaining why rather than what.
+
+## Tests
+
+- `node --test` runs everything in `tests/`. End-to-end tests run the real CLI in a
+  throwaway git repository (`tests/_helpers.mjs`).
+- A behaviour change comes with a test that would have failed before it.
+
+## Documents
+
+This repository keeps its own development documents with honestdocs, in `devdocs/`.
+
+- The README, `guide/` (the method, the agents section, the skill) and the templates are
+  what users read. A change to behaviour updates them in the same batch.
+- Non-trivial work opens a document first, and its commits carry `Doc: <id>`.
+
+## Before you say it works
+
+```sh
+node --test
+node bin/honestdocs.mjs index
+node bin/honestdocs.mjs check
+```
+
+Never commit or push unless asked.
+
+<!-- honestdocs:start -->
+## Development documents (honestdocs)
+
+This project keeps its decisions, plans, research, postmortems and standing rules in
+`devdocs/`, managed by `honestdocs`. The code is the truth: where a document and the code
+disagree, believe the code and correct the document's status.
+
+- **Starting a session:** run `honestdocs brief` — what is in progress, its next unticked
+  items, what changed lately, which rules are in force.
+- **Before building anything non-trivial:** run `honestdocs search <words>` (add
+  `--section alternatives` to see what was already rejected, and why), read the rules a
+  change touches (`honestdocs rules`), then open a document:
+  `honestdocs new <area> <slug> --type design|plan|research --title "…"`.
+- **While building:** put `Doc: <id>` on its own line at the end of every commit
+  message that does the work. Tick the document's checklist as items land; add dated
+  notes to its Log — they are the hand-over to the next session.
+- **Never type** `progress`, `files`, `superseded-by` or `updated` — `honestdocs index`
+  derives them. To replace a document, write `supersedes: [<old id>]` in the new one.
+- **Finishing:** `honestdocs done <id>` (or `--abandoned`, with the reason in the Log),
+  then `honestdocs check`. A change is not finished while a document or rule it affects
+  still describes the old behaviour.
+- Ids are filenames and never change. Add `--json` to any query command for
+  machine-readable output. The full method: `honestdocs guide`.
+<!-- honestdocs:end -->

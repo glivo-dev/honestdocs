@@ -1,0 +1,42 @@
+{
+  "name": "honestdocs",
+  "version": "0.1.0",
+  "description": "Development documents that git keeps honest — decisions, designs, plans, research, postmortems and standing rules, with the fields nobody should type derived from git.",
+  "keywords": [
+    "documentation",
+    "adr",
+    "architecture-decision-records",
+    "design-docs",
+    "devdocs",
+    "git",
+    "ai-agents",
+    "agents-md",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": "Glivo",
+  "homepage": "https://github.com/glivo-dev/honestdocs#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glivo-dev/honestdocs.git"
+  },
+  "bugs": "https://github.com/glivo-dev/honestdocs/issues",
+  "type": "module",
+  "bin": {
+    "honestdocs": "bin/honestdocs.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "templates/",
+    "guide/"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "docs:index": "node bin/honestdocs.mjs index",
+    "docs:check": "node bin/honestdocs.mjs check"
+  }
+}
