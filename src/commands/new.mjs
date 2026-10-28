@@ -2,8 +2,9 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { UsageError, c, die, emitJson, ok, parseArgs, say } from "../cli.mjs";
 import { loadConfig, statusesFor } from "../config.mjs";
-import { loadDocs, slugify, today } from "../docs.mjs";
+import { checklistProgress, loadDocs, slugify, today } from "../docs.mjs";
 import { stringify } from "../frontmatter.mjs";
+import { renderIndex } from "../render.mjs";
 import { fill, templateFor } from "../templates.mjs";
 
 export const summary = "start a document";
@@ -70,7 +71,9 @@ export function run(argv) {
     related: args.related,
     files: [],
   };
-  const content = stringify(meta) + fill(templateFor(config, type), { title: args.title, id, date: today() });
+  const body = fill(templateFor(config, type), { title: args.title, id, date: today() });
+  meta.progress = checklistProgress(body);
+  const content = stringify(meta) + body;
   const file = join(config.docsDir, area, `${id}.md`);
   const shown = relative(config.base, file).split("\\").join("/");
 
@@ -82,10 +85,13 @@ export function run(argv) {
   if (existsSync(file)) die(`${shown} already exists`);
   mkdirSync(join(config.docsDir, area), { recursive: true });
   writeFileSync(file, content);
+  // A new document has no commits yet, so nothing git knows can change: rendering the
+  // index is enough for `check` to pass, without the git pass a full `index` makes.
+  writeFileSync(join(config.docsDir, "INDEX.md"), renderIndex(config, loadDocs(config).filter((d) => d.hasMeta)));
 
   if (args.json) return emitJson({ id, path: shown, type, status });
   ok(c.dim(`${type} · ${area} · ${status}`));
   say(c.dim(`  Put "${config.trailer}: ${id}" in the commits that do this work —`));
-  say(c.dim("  that is how `honestdocs index` learns which files it touched."));
+  say(c.dim(`  that is how \`${config.command} index\` learns which files it touched.`));
   console.log(shown);
 }

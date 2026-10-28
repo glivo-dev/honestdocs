@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.3 — 2026-10-28
+
+Found by installing 0.1.2 from npm into a real project, the way a new user would.
+
+- Every command honestdocs writes or prints now runs. `AGENTS.md`, the skill, the documents
+  folder's README, the hints after `init` and messages such as "run `honestdocs index`" all
+  said bare `honestdocs`, which exists only after a global install — an agent following
+  AGENTS.md failed on its first step. They now use the new `command` config key, which
+  `init` sets from the runner that started it (`npx`, `bunx` or `pnpm dlx`). A config
+  without it means `npx honestdocs`; run `init --agents` / `--skill` to rewrite the
+  sections already written.
+- `new` leaves the set consistent: it writes the new document's `progress` and refreshes
+  INDEX.md, so `check` passes straight after it.
+
 ## 0.1.2 — 2026-10-28
 
 - The npm page really shows each image once. 0.1.1 fixed the README inside the package,

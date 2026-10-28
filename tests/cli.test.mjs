@@ -31,6 +31,35 @@ describe("init", () => {
     assert.equal(p.run(["brief"], join(p.dir, ".honestdocs/rules")).code, 0);
   });
 
+  // A bare `honestdocs` exists only after a global install. Everything init writes or
+  // prints must run in a project that was set up with a package runner.
+  const BARE = /(?<!(?:npx|bunx|dlx) )\bhonestdocs (?:init|new|index|check|done|status|brief|search|rules|promote|guide)\b/;
+  const WRITTEN = ["AGENTS.md", ".claude/skills/honestdocs/SKILL.md", ".honestdocs/README.md", ".honestdocs/INDEX.md"];
+
+  test("every command it writes or prints runs without a global install", () => {
+    p = project();
+    const r = p.run(["init", "--agents", "--skill"]);
+    assert.equal(JSON.parse(p.read(".honestdocs/config.json")).command, "npx honestdocs");
+    const rule = readdirSync(join(p.dir, ".honestdocs/rules"))[0];
+    for (const f of [...WRITTEN, `.honestdocs/rules/${rule}`]) assert.doesNotMatch(p.read(f), BARE, f);
+    assert.doesNotMatch(r.stderr, BARE);
+    assert.match(p.read("AGENTS.md"), /`npx honestdocs brief`/);
+    assert.match(r.stderr, /npx honestdocs new general/);
+    assert.match(p.run(["guide", "agents"]).stdout, /`npx honestdocs brief`/);
+  });
+
+  test("records the runner that started it: bunx under Bun", () => {
+    p = project();
+    p.run(["init", "--agents", "--skill"], p.dir, { npm_config_user_agent: "bun/1.2.0 npm/? node/v24.0.0 linux x64" });
+    assert.equal(JSON.parse(p.read(".honestdocs/config.json")).command, "bunx honestdocs");
+    for (const f of WRITTEN) assert.doesNotMatch(p.read(f), BARE, f);
+    assert.match(p.read("AGENTS.md"), /`bunx honestdocs brief`/);
+    assert.match(p.read(".claude/skills/honestdocs/SKILL.md"), /bunx honestdocs done <id>/);
+    // What it tells people to run afterwards follows the config, whoever runs it next.
+    p.write(".honestdocs/general/stray.md", "# No frontmatter\n");
+    assert.match(errors(p.run(["check", "--json"])), /`bunx honestdocs new`/);
+  });
+
   test("leaves a folder of the user's own documents alone", () => {
     p = project();
     p.write("devdocs/notes.md", "# Mine\n");
@@ -77,6 +106,16 @@ describe("new", () => {
     assert.equal(m.status, "draft");
     assert.equal(m.title, "Token rotation");
     assert.match(p.read(path), /## Alternatives considered/);
+  });
+
+  test("leaves the set consistent: check passes straight after new", () => {
+    p = project();
+    p.run(["init"]);
+    const path = p.run(["new", "general", "pricing", "--type", "plan", "--title", "Pricing"]).stdout.trim();
+    assert.equal(meta(path).progress, "0/1");
+    const c = p.run(["check", "--json"]);
+    assert.equal(c.code, 0, c.stdout);
+    assert.match(p.read(".honestdocs/INDEX.md"), /\[Pricing\]/);
   });
 
   test("refuses unknown areas, missing titles and statuses the type does not have", () => {

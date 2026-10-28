@@ -18,7 +18,7 @@ what keep it right. The `honestdocs` command enforces the ones a machine can che
 - **D2 A field someone has to remember to update will be wrong.** So people write four
   fields — `title`, `status`, `supersedes`, `related` — and everything else is derived:
   `progress` from the checklist, `files` from git, `superseded-by` from the newer
-  document, `updated` from git. `honestdocs index` derives; nobody types those.
+  document, `updated` from git. `{{command}} index` derives; nobody types those.
 
 - **D3 Write it down before building.** Non-trivial work starts with a document: a design
   for "how should this work", a plan for "what are the steps", research for "what is
@@ -32,7 +32,7 @@ what keep it right. The `honestdocs` command enforces the ones a machine can che
 - **D5 Write down what was rejected.** Every template has *Alternatives considered*. The
   option that lost, and why, is what stops the same argument three months later — and
   stops an AI agent from proposing it again as if it were new. Before proposing a design,
-  search for it: `honestdocs search <words> --section alternatives`.
+  search for it: `{{command}} search <words> --section alternatives`.
 
 - **D6 One document replaces another from the newer side.** Write
   `supersedes: [<old id>]` in the new document; the old one is marked automatically.
@@ -48,7 +48,7 @@ what keep it right. The `honestdocs` command enforces the ones a machine can che
   truths.
 
 - **D9 A rule that can be a test is one.** Rules are numbered (`R1`, `R2`, …) so they can
-  be cited in a review. A rule names the test that proves it, and `honestdocs check`
+  be cited in a review. A rule names the test that proves it, and `{{command}} check`
   fails when that test file is gone. A rule that lives only in prose is the one that gets
   forgotten.
 

@@ -29,7 +29,7 @@ export function run(argv) {
 
   if (lifecycleOf(config, doc.meta.type) !== "work") {
     die(`${id} is a ${doc.meta.type} — a living document is never finished. ` +
-      "Keep it current, or retire it: `honestdocs status " + id + " retired`");
+      `Keep it current, or retire it: \`${config.command} status ${id} retired\``);
   }
 
   const status = args.abandoned ? "abandoned" : "done";

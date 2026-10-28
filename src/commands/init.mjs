@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { c, die, ok, parseArgs, say } from "../cli.mjs";
-import { CONFIG_FILE, CONFIG_IN_ROOT, DEFAULT_AREAS, DEFAULT_ROOT, findConfig, loadConfig } from "../config.mjs";
+import { CONFIG_FILE, CONFIG_IN_ROOT, DEFAULT_AREAS, DEFAULT_ROOT, findConfig, loadConfig, runnerCommand } from "../config.mjs";
 import { today } from "../docs.mjs";
 import { stringify } from "../frontmatter.mjs";
 import { fill, packageFile } from "../templates.mjs";
@@ -68,8 +68,12 @@ function upsertBlock(file, block) {
   return "appended";
 }
 
-function installAgentBits(base, args, root, trailer) {
-  const values = { root, trailer };
+/** What the guide texts are filled with: where the documents live, and how to run the tool. */
+const guideValues = (config) => ({ root: config.root, trailer: config.trailer, command: config.command });
+
+function installAgentBits(config, args) {
+  const base = config.base;
+  const values = guideValues(config);
   if (args.agents || args["agents-file"]) {
     const file = resolve(base, args["agents-file"] ?? "AGENTS.md");
     const how = upsertBlock(file, fill(packageFile("guide", "agents-snippet.md"), values));
@@ -96,7 +100,7 @@ export function run(argv) {
     if (!args.agents && !args["agents-file"] && !args.skill) {
       die(`already set up: ${existing.file} — re-run with --agents or --skill to refresh those`);
     }
-    installAgentBits(config.base, args, config.root, config.trailer);
+    installAgentBits(config, args);
     return;
   }
 
@@ -117,6 +121,7 @@ export function run(argv) {
     title: args.title ?? "Development documents",
     areas,
     trailer: "Doc",
+    command: runnerCommand(),
     codeRepos: args["code-repo"].length ? args["code-repo"] : ["."],
   };
   const configPath = root === DEFAULT_ROOT ? CONFIG_IN_ROOT : CONFIG_FILE;
@@ -129,7 +134,7 @@ export function run(argv) {
 
   const readme = join(config.docsDir, "README.md");
   if (!existsSync(readme)) {
-    writeFileSync(readme, fill(packageFile("guide", "docs-readme.md"), { root, trailer: config.trailer }));
+    writeFileSync(readme, fill(packageFile("guide", "docs-readme.md"), guideValues(config)));
     ok(`${root}/README.md`);
   }
 
@@ -150,17 +155,18 @@ export function run(argv) {
     related: [],
     files: [],
   };
-  writeFileSync(rulesFile, stringify(meta) + fill(packageFile("guide", "before-you-build.md"), { root, trailer: config.trailer }));
+  writeFileSync(rulesFile, stringify(meta) + fill(packageFile("guide", "before-you-build.md"), guideValues(config)));
   ok(`${root}/rules/${id}.md`);
 
-  installAgentBits(config.base, args, root, config.trailer);
+  installAgentBits(config, args);
   report(config, runIndex(config), false);
 
   say("");
   const area = Object.keys(config.areas).find((a) => a !== "rules") ?? "rules";
+  const cmd = config.command;
   say("Next:");
-  say(c.dim(`  start a document     honestdocs new ${area} my-first-design --title "…"`));
+  say(c.dim(`  start a document     ${cmd} new ${area} my-first-design --title "…"`));
   say(c.dim(`  link work to it      git commit -m "…" -m "${config.trailer}: <id>"`));
-  say(c.dim("  keep it honest       honestdocs index && honestdocs check"));
-  if (!args.agents && !args["agents-file"]) say(c.dim("  teach your agents    honestdocs init --agents"));
+  say(c.dim(`  keep it honest       ${cmd} index && ${cmd} check`));
+  if (!args.agents && !args["agents-file"]) say(c.dim(`  teach your agents    ${cmd} init --agents`));
 }

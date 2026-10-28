@@ -12,7 +12,7 @@ and the code disagree, believe the code and correct the document.
 ## When a session starts
 
 ```sh
-honestdocs brief
+{{command}} brief
 ```
 
 Work in progress with its next unticked items, what is planned, what changed lately,
@@ -21,16 +21,16 @@ the hand-over from the last session.
 
 ## Before building
 
-1. **Has this been weighed before?** `honestdocs search <words>`; with
+1. **Has this been weighed before?** `{{command}} search <words>`; with
    `--section alternatives` it shows only what was considered and rejected, with the
    reason. Superseded and abandoned documents are included on purpose. Do not propose a
    rejected option again without saying what has changed.
-2. **Which rules apply?** `honestdocs rules` lists the numbered rules in force and the
+2. **Which rules apply?** `{{command}} rules` lists the numbered rules in force and the
    tests that prove them. Go through the `before-you-build` checklist in `{{root}}/rules/`.
 3. **Open a document** for anything non-trivial:
 
    ```sh
-   honestdocs new <area> <slug> --type design --title "Token rotation"
+   {{command}} new <area> <slug> --type design --title "Token rotation"
    ```
 
    Types: `design` (how it should work), `plan` (ordered steps, checklist), `research`
@@ -46,26 +46,26 @@ the hand-over from the last session.
   {{trailer}}: 2026-11-02-token-rotation
   ```
 
-  That is how `honestdocs index` learns which files the document touched. Several ids:
+  That is how `{{command}} index` learns which files the document touched. Several ids:
   comma-separated or one line each.
 - Tick checklist items (`- [x]`) as they land. Add dated notes to the Log.
 - Never write `progress`, `files`, `superseded-by` or `updated` by hand. Write only
   `title`, `status`, `supersedes`, `related`.
 - Replacing a document: `supersedes: [<old id>]` in the **new** one, then
-  `honestdocs index` marks the old one.
+  `{{command}} index` marks the old one.
 - A rule changed: edit its rule document in place and add a Log line — never a second
   document beside it.
 
 ## Finishing
 
 ```sh
-honestdocs done <id>              # refuses while checklist items are unticked
-honestdocs done <id> --abandoned  # dropped on purpose; the reason goes in the Log
-honestdocs status <id> current    # living documents: draft | current | retired
-honestdocs index && honestdocs check
+{{command}} done <id>              # refuses while checklist items are unticked
+{{command}} done <id> --abandoned  # dropped on purpose; the reason goes in the Log
+{{command}} status <id> current    # living documents: draft | current | retired
+{{command}} index && {{command}} check
 ```
 
 `check` exits 1 on anything that makes the set lie. A change is not finished while a
 document or rule it affects still describes the old behaviour.
 
-Every query command takes `--json`. The method in full: `honestdocs guide`.
+Every query command takes `--json`. The method in full: `{{command}} guide`.

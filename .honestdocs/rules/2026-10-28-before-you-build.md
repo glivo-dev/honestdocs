@@ -53,7 +53,7 @@ Go down this before starting, and again before saying a batch is finished.
 ## The checklist
 
 **Any change**
-- ☐ Searched earlier decisions: `honestdocs search <words> --section alternatives`.
+- ☐ Searched earlier decisions: `node bin/honestdocs.mjs search <words> --section alternatives`.
 - ☐ README, `guide/` (method, agents section, skill) and `templates/` updated where the
   change shows (B2).
 

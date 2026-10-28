@@ -6,6 +6,7 @@
     "rules": "Standing rules every change must keep — read before building, updated in place"
   },
   "trailer": "Doc",
+  "command": "node bin/honestdocs.mjs",
   "codeRepos": [
     "."
   ]

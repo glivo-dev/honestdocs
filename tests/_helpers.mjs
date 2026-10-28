@@ -18,6 +18,8 @@ const ENV = {
   GIT_COMMITTER_NAME: "Test",
   GIT_COMMITTER_EMAIL: "test@example.com",
   GIT_CONFIG_NOSYSTEM: "1",
+  // Set by `npm test` or `bun run test`; `init` reads it to pick the command it records.
+  npm_config_user_agent: "",
 };
 
 export function project({ git = true } = {}) {
@@ -27,8 +29,8 @@ export function project({ git = true } = {}) {
   const api = {
     dir,
     /** Run the CLI; never throws — tests look at code, stdout and stderr. */
-    run(args, cwd = dir) {
-      const r = spawnSync(process.execPath, [BIN, ...args], { cwd, env: ENV, encoding: "utf8" });
+    run(args, cwd = dir, env = {}) {
+      const r = spawnSync(process.execPath, [BIN, ...args], { cwd, env: { ...ENV, ...env }, encoding: "utf8" });
       return { code: r.status, stdout: r.stdout, stderr: r.stderr, json: () => JSON.parse(r.stdout) };
     },
     write(rel, content) {

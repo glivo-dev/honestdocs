@@ -1,4 +1,4 @@
-// Finding and reading honestdocs.config.json.
+// Finding and reading the config: .honestdocs/config.json, or honestdocs.config.json.
 //
 // The config is found by walking up from the working directory, the way git finds .git,
 // so every command works from anywhere inside the project. Everything a project may want
@@ -52,6 +52,22 @@ const DEFAULT_TYPES = {
   rule: { lifecycle: "living", description: "Numbered rules every change must keep, each naming its test where it can" },
 };
 
+/**
+ * How a project runs honestdocs, for every command the tool prints or writes into
+ * AGENTS.md. A bare `honestdocs` exists only after a global install, on one machine; a
+ * project set up with `npx honestdocs init` has no such command, and an agent told to run
+ * `honestdocs brief` fails on its first step. So `init` records the package runner that
+ * started it — never the bare name — and a config without one means npx.
+ */
+export const DEFAULT_COMMAND = "npx honestdocs";
+
+export function runnerCommand(env = process.env) {
+  const agent = env.npm_config_user_agent ?? "";
+  if (agent.startsWith("bun/")) return "bunx honestdocs";
+  if (agent.startsWith("pnpm/")) return "pnpm dlx honestdocs";
+  return DEFAULT_COMMAND;
+}
+
 export const DEFAULT_AREAS = {
   general: "Anything that does not belong to a narrower area yet",
   rules: "Standing rules every change must keep — read before building, updated in place",
@@ -82,7 +98,7 @@ export function findConfig(start = process.cwd()) {
  */
 export function loadConfig(start = process.cwd()) {
   const found = findConfig(start);
-  if (!found) throw new Failure(`no ${CONFIG_IN_ROOT} here or above — run \`honestdocs init\` first`);
+  if (!found) throw new Failure(`no ${CONFIG_IN_ROOT} here or above — run \`${runnerCommand()} init\` first`);
   let raw;
   try {
     raw = JSON.parse(readFileSync(found.file, "utf8"));
@@ -133,6 +149,7 @@ function normalise(raw, base, file = join(base, CONFIG_FILE)) {
     areas,
     types,
     trailer,
+    command: typeof raw.command === "string" && raw.command.trim() ? raw.command.trim() : DEFAULT_COMMAND,
     codeRepos,
     templatesDir: raw.templates ? resolve(base, raw.templates) : null,
     recent: Number.isInteger(raw.recent) && raw.recent > 0 ? raw.recent : 25,

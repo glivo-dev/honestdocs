@@ -14,11 +14,16 @@ the code disagree, believe the code — then come back and correct the document'
 ## Working with them
 
 ```sh
-honestdocs brief                                  # what is under way
-honestdocs new <area> <slug> --type plan --title "…"
-git commit -m "…" -m "{{trailer}}: <id>"                    # link the work to its document
-honestdocs done <id>                              # close it
-honestdocs index && honestdocs check              # derive, regenerate, validate
+# what is under way
+{{command}} brief
+# start a document
+{{command}} new <area> <slug> --type plan --title "…"
+# link the work to it
+git commit -m "…" -m "{{trailer}}: <id>"
+# close it
+{{command}} done <id>
+# derive, regenerate, validate
+{{command}} index && {{command}} check
 ```
 
 Write by hand only `title`, `status`, `supersedes` and `related`. The rest is derived —
@@ -26,4 +31,4 @@ Write by hand only `title`, `status`, `supersedes` and `related`. The rest is de
 `superseded-by` from the newer document, `updated` from git — because a field someone has
 to remember to update will be wrong.
 
-The method in full: `honestdocs guide`.
+The method in full: `{{command}} guide`.

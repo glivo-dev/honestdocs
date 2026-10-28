@@ -28,9 +28,9 @@ export function run(argv) {
   const allowed = statusesFor(config, doc.meta.type);
   if (!allowed) die(`${doc.rel} has an unknown type "${doc.meta.type}"`);
   if (status === "superseded") {
-    die("set `supersedes: [" + id + "]` on the document that replaces it, then run `honestdocs index`");
+    die(`set \`supersedes: [${id}]\` on the document that replaces it, then run \`${config.command} index\``);
   }
-  if (status === "done" || status === "abandoned") die(`use \`honestdocs done ${id}${status === "abandoned" ? " --abandoned" : ""}\` — it checks the checklist first`);
+  if (status === "done" || status === "abandoned") die(`use \`${config.command} done ${id}${status === "abandoned" ? " --abandoned" : ""}\` — it checks the checklist first`);
   if (!allowed[status]) {
     die(`"${status}" is not a status for a ${doc.meta.type} (${lifecycleOf(config, doc.meta.type)}) — expected one of: ${Object.keys(allowed).filter((s) => s !== "superseded").join(", ")}`);
   }

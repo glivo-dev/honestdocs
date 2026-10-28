@@ -37,6 +37,7 @@ function runCheck(config, { fix = false } = {}) {
   const fixed = [];
   const err = (d, msg) => errors.push({ file: d.rel, msg });
   const warnAt = (d, msg) => warnings.push({ file: d.rel, msg });
+  const cmd = config.command;
 
   const ids = new Map();
   for (const d of docs) {
@@ -47,7 +48,7 @@ function runCheck(config, { fix = false } = {}) {
   for (const d of docs) {
     const m = d.meta;
     if (!d.hasMeta) {
-      err(d, "no frontmatter — start documents with `honestdocs new`, or add the block by hand");
+      err(d, `no frontmatter — start documents with \`${cmd} new\`, or add the block by hand`);
       continue;
     }
     if (!m.id) err(d, "missing `id`");
@@ -91,7 +92,7 @@ function runCheck(config, { fix = false } = {}) {
       warnAt(d, "superseded, but nothing says by what — set `supersedes` on the newer document");
     }
     if ((m.status === "done" || m.status === "abandoned") && !m.completed && m.legacy !== true) {
-      warnAt(d, `${m.status} but \`completed\` is empty — close documents with \`honestdocs done\``);
+      warnAt(d, `${m.status} but \`completed\` is empty — close documents with \`${cmd} done\``);
     }
     if (m.status === "done") {
       const p = checklistProgress(d.body);
@@ -127,8 +128,8 @@ function runCheck(config, { fix = false } = {}) {
   for (const ch of derive(config, docs.filter((d) => d.hasMeta && d.meta.id === d.id), facts)) {
     for (const k of new Set([...Object.keys(ch.before), ...Object.keys(ch.meta)])) {
       if (JSON.stringify(ch.before[k]) === JSON.stringify(ch.meta[k])) continue;
-      const msg = `\`${k}\` is ${JSON.stringify(ch.before[k] ?? "")}, should be ${JSON.stringify(ch.meta[k])} — run \`honestdocs index\``;
-      if (k === "status") err(ch.doc, `replaced by ${ch.meta["superseded-by"]} but still says "${ch.before.status}" — run \`honestdocs index\``);
+      const msg = `\`${k}\` is ${JSON.stringify(ch.before[k] ?? "")}, should be ${JSON.stringify(ch.meta[k])} — run \`${cmd} index\``;
+      if (k === "status") err(ch.doc, `replaced by ${ch.meta["superseded-by"]} but still says "${ch.before.status}" — run \`${cmd} index\``);
       else if (k === "progress" || k === "superseded-by") err(ch.doc, msg);
       else warnAt(ch.doc, msg);
     }
@@ -138,9 +139,9 @@ function runCheck(config, { fix = false } = {}) {
   // so a commit can never make it stale on its own.
   const indexFile = join(config.docsDir, "INDEX.md");
   const expected = renderIndex(config, docs.filter((d) => d.hasMeta));
-  if (!existsSync(indexFile)) errors.push({ file: "INDEX.md", msg: "missing — run `honestdocs index`" });
+  if (!existsSync(indexFile)) errors.push({ file: "INDEX.md", msg: `missing — run \`${cmd} index\`` });
   else if (readFileSync(indexFile, "utf8") !== expected) {
-    errors.push({ file: "INDEX.md", msg: "stale: frontmatter changed since it was generated — run `honestdocs index`" });
+    errors.push({ file: "INDEX.md", msg: `stale: frontmatter changed since it was generated — run \`${cmd} index\`` });
   }
 
   return { documents: docs.length, git: facts.available ? "ok" : facts.reason, errors, warnings, fixed };

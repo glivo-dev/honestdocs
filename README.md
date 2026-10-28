@@ -290,6 +290,7 @@ Markdown, so your own documents are never overwritten.
     "rules": "Standing rules every change must keep"
   },
   "trailer": "Doc",                       // the commit trailer key
+  "command": "npx honestdocs",            // how this project runs it (see below)
   "codeRepos": ["."],                     // where trailer commits are read from
   "templates": ".honestdocs/_templates",  // optional: your own <type>.md templates
   "types": {                              // optional: add or remove types
@@ -300,6 +301,12 @@ Markdown, so your own documents are never overwritten.
   "root": ".honestdocs"                   // where the documents live (with a top-level config)
 }
 ```
+
+`command` is what honestdocs writes into `AGENTS.md`, the skill and its own messages
+whenever it tells someone to run it. `init` records the runner that started it —
+`bunx honestdocs` under Bun, `pnpm dlx honestdocs` under pnpm, otherwise `npx honestdocs` —
+and never a bare `honestdocs`, which exists only where someone installed it globally.
+Change it, then `init --agents` (and `--skill`) to rewrite those sections.
 
 Templates may use `{{title}}`, `{{id}}` and `{{date}}`. Write the bodies in any language;
 filenames and frontmatter stay plain ASCII so every tool can read them.
