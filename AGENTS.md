@@ -32,8 +32,9 @@ This repository keeps its own development documents with honestdocs, in `.honest
   result on a light and a dark background before calling it done.
 - README images come in pairs, `…-light.svg#gh-light-mode-only` and
   `…-dark.svg#gh-dark-mode-only`, each `<img>` on its own line: GitHub picks one by its page
-  theme, and `prepack` drops the dark lines for npm's light-only page
-  (`scripts/npm-readme.mjs`). Not `<picture>` — it does not follow GitHub's theme.
+  theme, and `prepublishOnly` drops the dark lines for npm's light-only page until
+  `postpublish` (`scripts/npm-readme.mjs`). Not `<picture>` — it does not follow GitHub's
+  theme. If a publish fails, run `node scripts/npm-readme.mjs restore`.
 
 ## Before you say it works
 

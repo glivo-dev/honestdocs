@@ -138,3 +138,8 @@ node bin/honestdocs.mjs index && node bin/honestdocs.mjs check
 - 2026-10-28 — It did: 0.1.0's npm page showed every image twice, light above dark. npm's
   page has only a light theme, so `prepack` rewrites README.md to the light images alone
   (`scripts/npm-readme.mjs`) and `postpack` restores it; checked with a real `npm pack`.
+- 2026-10-28 — 0.1.1's tarball was right (no dark images) but its page was not: the page
+  shows the README npm re-reads from disk after packing (npm 11 `lib/commands/publish.js`:
+  prepublishOnly → pack → re-read manifest → upload → postpublish), and postpack had
+  already restored it. The rewrite now spans prepublishOnly to postpublish. Lesson: check
+  what the registry stores (`npm view <pkg> readme`), not only the tarball.

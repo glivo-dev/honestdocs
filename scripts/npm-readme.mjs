@@ -2,11 +2,15 @@
 // The README's images come in a light and a dark variant, chosen on GitHub by the
 // `#gh-light-mode-only` / `#gh-dark-mode-only` fragments its page stylesheet hides. npm's
 // package page has one, light, theme and ignores the fragments, so it shows both. While
-// the package is packed, README.md is rewritten to the light images alone; `restore` puts
-// the GitHub version back.
+// the package is published, README.md is rewritten to the light images alone; `restore`
+// puts the GitHub version back.
 //
-//   node scripts/npm-readme.mjs pack      (prepack)
-//   node scripts/npm-readme.mjs restore   (postpack)
+// The page does not show the README in the tarball but the one npm reads from disk after
+// packing, just before upload — so the rewrite spans prepublishOnly to postpublish. A
+// prepack/postpack pair fixes the tarball and leaves the page showing both (0.1.1 did).
+//
+//   node scripts/npm-readme.mjs pack      (prepublishOnly)
+//   node scripts/npm-readme.mjs restore   (postpublish; also by hand after a failed publish)
 
 import { existsSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";

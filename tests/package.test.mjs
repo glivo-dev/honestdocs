@@ -41,6 +41,8 @@ test("the README packed for npm shows each image once, in its light variant", ()
   for (const name of ["logo-light.svg", "how-it-works-light.svg"]) {
     assert.equal(npm.split(`assets/${name}"`).length - 1, 1, name);
   }
-  assert.equal(pkg.scripts.prepack, "node scripts/npm-readme.mjs pack");
-  assert.equal(pkg.scripts.postpack, "node scripts/npm-readme.mjs restore");
+  // npm's page shows the README read after packing, so restoring at postpack is too early.
+  assert.equal(pkg.scripts.prepublishOnly, "node scripts/npm-readme.mjs pack");
+  assert.equal(pkg.scripts.postpublish, "node scripts/npm-readme.mjs restore");
+  assert.equal(pkg.scripts.postpack, undefined);
 });

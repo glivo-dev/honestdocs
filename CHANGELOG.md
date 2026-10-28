@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2 — 2026-10-28
+
+- The npm page really shows each image once. 0.1.1 fixed the README inside the package,
+  but npm's page shows the README it reads after packing, which 0.1.1 had already put back.
+
 ## 0.1.1 — 2026-10-28
 
 - The README on npm shows each image once. npm's page ignores GitHub's theme fragments
