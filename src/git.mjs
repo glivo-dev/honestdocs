@@ -3,6 +3,7 @@
 // documents should not mean a few hundred processes.
 
 import { execFileSync } from "node:child_process";
+import { realpathSync } from "node:fs";
 import { basename, join, relative } from "node:path";
 
 const RS = "\x1e"; // starts a commit
@@ -22,7 +23,23 @@ export function git(args, cwd) {
   }
 }
 
-export const toplevel = (dir) => git(["rev-parse", "--show-toplevel"], dir).trim() || null;
+/**
+ * The canonical form of a path. Windows can spell one folder two ways — a short 8.3 name
+ * such as `RUNNER~1` from the environment, the long name from git — and `path.relative`
+ * between the two spellings walks out of the folder instead of into it.
+ */
+export function real(p) {
+  try {
+    return realpathSync.native(p);
+  } catch {
+    return p;
+  }
+}
+
+export const toplevel = (dir) => {
+  const top = git(["rev-parse", "--show-toplevel"], dir).trim();
+  return top ? real(top) : null;
+};
 
 /** A shallow clone (CI's default) has no history to derive anything from. */
 export const isShallow = (dir) => git(["rev-parse", "--is-shallow-repository"], dir).trim() === "true";
@@ -81,7 +98,7 @@ export function uncommittedFiles(dir) {
     if (e.length < 4) continue;
     // A rename is followed by its old path as a separate entry; skip that one.
     if (e[0] === "R" || e[0] === "C") i++;
-    const rel = relative(dir, join(top, e.slice(3))).split("\\").join("/");
+    const rel = relative(real(dir), join(top, e.slice(3))).split("\\").join("/");
     if (!rel.startsWith("..")) set.add(rel);
   }
   return set;
@@ -132,7 +149,7 @@ export function filesForAllDocs(config) {
   for (const repoDir of config.codeRepos) {
     const top = toplevel(repoDir);
     if (!top) continue;
-    const rel = relative(top, config.docsDir).split("\\").join("/");
+    const rel = relative(top, real(config.docsDir)).split("\\").join("/");
     const exclude = rel && !rel.startsWith("..") ? rel : null;
     const prefix = multi ? basename(top) + "/" : "";
     const found = filesByTrailer(top, config.trailer, { exclude, prefix });

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { afterEach, describe, test } from "node:test";
@@ -93,6 +94,22 @@ describe("index", () => {
     assert.deepEqual(meta("devdocs/general/2026-01-01-auth.md").files, ["src/b.js", "src/a.js"]);
     // The documents folder itself is never listed as work done.
     assert.deepEqual(meta("devdocs/general/2026-01-01-auth-tokens.md").files, ["src/b.js"]);
+  });
+
+  test("run from a Windows short (8.3) path, the documents folder is still left out", { skip: process.platform !== "win32" }, () => {
+    p = project();
+    config(p);
+    p.commit("setup");
+    doc(p, "general", "2026-01-01-a");
+    p.write("src/a.js", "a");
+    p.commit("work\n\nDoc: 2026-01-01-a");
+    const short = execFileSync("cmd", ["/c", `for %I in ("${p.dir}") do @echo %~sI`], {
+      encoding: "utf8",
+      windowsVerbatimArguments: true,
+    }).trim();
+    if (short.toLowerCase() === p.dir.toLowerCase()) return; // 8.3 names are off on this volume
+    assert.equal(p.run(["index"], short).code, 0);
+    assert.deepEqual(meta("devdocs/general/2026-01-01-a.md").files, ["src/a.js"]);
   });
 
   test("counts the checklist and marks a replaced document", () => {
