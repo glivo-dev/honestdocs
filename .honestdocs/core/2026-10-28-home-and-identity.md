@@ -11,7 +11,7 @@ progress: 7/9
 supersedes: []
 superseded-by:
 related: [2026-10-28-v1]
-files: []
+files: [AGENTS.md, CHANGELOG.md, README.md, assets/how-it-works-dark.svg, assets/how-it-works-light.svg, assets/logo-dark.svg, assets/logo-light.svg, assets/mark.svg, bin/honestdocs.mjs, package.json, scripts/build-assets.mjs, src/cli.mjs, src/commands/brief.mjs, src/commands/check.mjs, src/commands/guide.mjs, src/commands/init.mjs, src/commands/rules.mjs, src/config.mjs, src/docs.mjs, src/frontmatter.mjs, src/git.mjs, src/templates.mjs, tests/cli.test.mjs]
 ---
 # A home of its own (.honestdocs/), and how the project presents itself
 
