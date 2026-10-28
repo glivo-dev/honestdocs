@@ -135,3 +135,6 @@ node bin/honestdocs.mjs index && node bin/honestdocs.mjs check
   `[href$=#gh-light-mode-only]` under `data-color-mode=dark` (and the reverse), and its
   Markdown API wraps each README image in a link whose `href` keeps the fragment. Before
   publishing to npm, decide what npm's page shows (it may render both).
+- 2026-10-28 — It did: 0.1.0's npm page showed every image twice, light above dark. npm's
+  page has only a light theme, so `prepack` rewrites README.md to the light images alone
+  (`scripts/npm-readme.mjs`) and `postpack` restores it; checked with a real `npm pack`.

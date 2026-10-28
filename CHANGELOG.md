@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 — 2026-10-28
+
+- The README on npm shows each image once. npm's page ignores GitHub's theme fragments
+  and showed the light and the dark variant one above the other; the packed README now
+  carries the light ones only.
+
 ## 0.1.0 — 2026-10-28
 
 First version.

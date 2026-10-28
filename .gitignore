@@ -1,3 +1,4 @@
 node_modules/
 *.tgz
+.README.github.md
 .DS_Store

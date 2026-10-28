@@ -1,6 +1,6 @@
 {
   "name": "honestdocs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Development documents that stay true — decisions, designs, plans, research, postmortems and standing rules, kept honest for people and AI agents.",
   "keywords": [
     "documentation",
@@ -36,6 +36,8 @@
   },
   "scripts": {
     "test": "node --test",
+    "prepack": "node scripts/npm-readme.mjs pack",
+    "postpack": "node scripts/npm-readme.mjs restore",
     "assets": "node scripts/build-assets.mjs",
     "docs:index": "node bin/honestdocs.mjs index",
     "docs:check": "node bin/honestdocs.mjs check"

@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
+import { forNpm } from "../scripts/npm-readme.mjs";
 import { BIN } from "./_helpers.mjs";
 
 const pkg = JSON.parse(readFileSync(join(BIN, "..", "..", "package.json"), "utf8"));
@@ -30,4 +31,16 @@ test("H2: an unknown option is a usage error, not ignored", () => {
 
 test("the published package carries the files the CLI reads at run time", () => {
   for (const dir of ["bin/", "src/", "templates/", "guide/"]) assert.ok(pkg.files.includes(dir), dir);
+});
+
+test("the README packed for npm shows each image once, in its light variant", () => {
+  const github = readFileSync(join(BIN, "..", "..", "README.md"), "utf8");
+  const npm = forNpm(github);
+  assert.match(github, /#gh-dark-mode-only/);
+  assert.doesNotMatch(npm, /#gh-|-dark\.svg/);
+  for (const name of ["logo-light.svg", "how-it-works-light.svg"]) {
+    assert.equal(npm.split(`assets/${name}"`).length - 1, 1, name);
+  }
+  assert.equal(pkg.scripts.prepack, "node scripts/npm-readme.mjs pack");
+  assert.equal(pkg.scripts.postpack, "node scripts/npm-readme.mjs restore");
 });
