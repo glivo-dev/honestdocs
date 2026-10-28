@@ -24,7 +24,7 @@
 | Updated | | Document | Area |
 |---|---|---|---|
 | 2026-10-28 | 📘 | [Before you build: the checklist every change goes through](rules/2026-10-28-before-you-build.md) | rules |
-| 2026-10-28 | 🔧 | [A home of its own (.honestdocs/), and how the project presents itself](core/2026-10-28-home-and-identity.md) | core |
+| 2026-10-28 | ✅ | [A home of its own (.honestdocs/), and how the project presents itself](core/2026-10-28-home-and-identity.md) | core |
 | 2026-10-28 | ✅ | [honestdocs v1: the method and CLI, made general](core/2026-10-28-v1.md) | core |
 
 ## By area
@@ -35,7 +35,7 @@ _The CLI: commands, derivation, checks, layouts_
 
 | | Document | Type | Progress | Updated |
 |---|---|---|---|---|
-| 🔧 | [A home of its own (.honestdocs/), and how the project presents itself](core/2026-10-28-home-and-identity.md) | design | 7/9 | 2026-10-28 |
+| ✅ | [A home of its own (.honestdocs/), and how the project presents itself](core/2026-10-28-home-and-identity.md) | design | 9/9 | 2026-10-28 |
 | ✅ | [honestdocs v1: the method and CLI, made general](core/2026-10-28-v1.md) | plan | 10/10 | 2026-10-28 |
 
 ### rules
