@@ -11,6 +11,7 @@
 </p>
 
 <p align="center">
+  <a href="https://www.npmjs.com/package/honestdocs"><img alt="npm version" src="https://img.shields.io/npm/v/honestdocs?label=npm&color=1f2328"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-16a34a"></a>
   <img alt="Node 20+ or Bun" src="https://img.shields.io/badge/node-%E2%89%A520%20%C2%B7%20bun-1f2328">
   <img alt="Zero dependencies" src="https://img.shields.io/badge/dependencies-0-1f2328">
