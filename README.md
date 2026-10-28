@@ -46,6 +46,17 @@ That creates `.honestdocs/` — its config, a README, a first rule document and 
 and adds a short section to `AGENTS.md` so your AI agents follow the method too. Nothing
 else in your project is touched.
 
+**Or hand it to your coding agent** (Claude Code, Codex, Cursor — anything that can run
+commands in your project). Paste this:
+
+```text
+Set up honestdocs (https://github.com/glivo-dev/honestdocs) in this repository.
+Run `npx honestdocs init --agents` — with `--skill` too if you are Claude Code, and
+`bunx` instead of `npx` if this project uses Bun. Don't install it globally. Then read
+the section it added to AGENTS.md and follow it from now on. Run the `check` command it
+names, and show me what changed before committing anything.
+```
+
 ```sh
 npx honestdocs new general token-rotation --type plan --title "Token rotation"
 ```
