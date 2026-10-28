@@ -86,6 +86,15 @@ Non-goals: a docs website; a social-preview image (later, when the repository is
   lose the word shape the ascenders give; title case gives the name two spellings (logo
   versus command, package, folder), and people would mix them. Lower case is what the user
   chose on seeing all of them.
+- **`<picture>` with `prefers-color-scheme` to pick the light or dark image.** The first
+  README used it. Rejected after it failed on a phone: GitHub's page in light colours, the
+  dark logo chosen — light text on white, in both directions of switching. The README uses
+  GitHub's `#gh-light-mode-only` / `#gh-dark-mode-only` fragments instead: the page's own
+  stylesheet hides them by its `data-color-mode`, so the image follows whatever coloured
+  the page. Cost: a renderer that ignores the fragments (npm, an editor preview) shows both.
+- **One logo in colours that read on every background** (mid greys, a green word). Works
+  everywhere, but the user found the green unattractive and the greys washed out next to
+  the black-and-white original.
 
 ## Checklist
 
@@ -121,3 +130,8 @@ node bin/honestdocs.mjs index && node bin/honestdocs.mjs check
   mark.
 - 2026-10-28 — Cleanup before committing: twelve declarations no other file uses are no
   longer exported; two unused colour helpers removed.
+- 2026-10-28 — README images switched from `<picture>` to the `#gh-*-mode-only` fragments
+  after the phone report above. Checked against GitHub: its live stylesheet hides
+  `[href$=#gh-light-mode-only]` under `data-color-mode=dark` (and the reverse), and its
+  Markdown API wraps each README image in a link whose `href` keeps the fragment. Before
+  publishing to npm, decide what npm's page shows (it may render both).

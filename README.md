@@ -1,8 +1,6 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
-    <img src="assets/logo-light.svg" alt="honestdocs" width="422">
-  </picture>
+  <img src="assets/logo-light.svg#gh-light-mode-only" alt="honestdocs" width="422">
+  <img src="assets/logo-dark.svg#gh-dark-mode-only" alt="honestdocs" width="422">
 </p>
 
 <h3 align="center">Development documents that stay true.</h3>
@@ -31,10 +29,8 @@ was written. Someone builds from the wrong one.
 people know. The tool works out the rest, and fails CI the moment the set starts to lie.
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/how-it-works-dark.svg">
-    <img src="assets/how-it-works-light.svg" alt="People write title, status, supersedes, related and the reasoning. honestdocs derives progress from the checklist, files from commit trailers, updated from git history, superseded-by from the newer document. check fails CI when the set lies." width="880">
-  </picture>
+  <img src="assets/how-it-works-light.svg#gh-light-mode-only" alt="People write title, status, supersedes, related and the reasoning. honestdocs derives progress from the checklist, files from commit trailers, updated from git history, superseded-by from the newer document. check fails CI when the set lies." width="880">
+  <img src="assets/how-it-works-dark.svg#gh-dark-mode-only" alt="People write title, status, supersedes, related and the reasoning. honestdocs derives progress from the checklist, files from commit trailers, updated from git history, superseded-by from the newer document. check fails CI when the set lies." width="880">
 </p>
 
 Plain Markdown in your repository. No server, no database, no dependencies.
