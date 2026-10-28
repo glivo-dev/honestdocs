@@ -60,6 +60,18 @@ describe("init", () => {
     assert.match(errors(p.run(["check", "--json"])), /`bunx honestdocs new`/);
   });
 
+  test("keeps the line endings of an AGENTS.md it adds to", () => {
+    p = project();
+    // As git leaves a file on Windows with core.autocrlf.
+    p.write("AGENTS.md", "# Mine\r\n\r\nKeep this.\r\n");
+    p.run(["init", "--agents"]);
+    const text = p.read("AGENTS.md");
+    assert.match(text, /^# Mine\r\n\r\nKeep this\.\r\n\r\n<!-- honestdocs:start -->\r\n/);
+    assert.doesNotMatch(text, /[^\r]\n/, "no line ends in a bare LF");
+    assert.equal(p.run(["init", "--agents"]).code, 0);
+    assert.equal(p.read("AGENTS.md"), text, "a refresh changes nothing");
+  });
+
   test("leaves a folder of the user's own documents alone", () => {
     p = project();
     p.write("devdocs/notes.md", "# Mine\n");

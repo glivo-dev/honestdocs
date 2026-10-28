@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.4 — 2026-10-28
+
+- `init --agents` keeps the line endings of the file it adds to. An `AGENTS.md` checked out
+  with CRLF got its section in LF, leaving the file with both. Found by handing only the
+  repository link to a fresh coding agent and letting it set a real project up.
+- README: a prompt to paste to a coding agent, so it sets honestdocs up the same way every
+  time — `--agents`, `--skill` for Claude Code, `bunx` in a Bun project, no global install,
+  nothing committed unseen.
+
 ## 0.1.3 — 2026-10-28
 
 Found by installing 0.1.2 from npm into a real project, the way a new user would.

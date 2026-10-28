@@ -48,14 +48,16 @@ function hasMarkdown(dir) {
 const START = "<!-- honestdocs:start -->";
 const END = "<!-- honestdocs:end -->";
 
-/** Insert or replace the marked block, leaving everything else in the file alone. */
+/** Insert or replace the marked block, leaving everything else in the file alone — down to its line endings. */
 function upsertBlock(file, block) {
-  const wrapped = `${START}\n${block.trim()}\n${END}`;
   if (!existsSync(file)) {
-    writeFileSync(file, wrapped + "\n");
+    writeFileSync(file, `${START}\n${block.trim()}\n${END}\n`);
     return "created";
   }
   const text = readFileSync(file, "utf8");
+  // A file git checked out with CRLF stays CRLF; a block in LF would leave it with both.
+  const eol = /\r\n/.test(text) ? "\r\n" : "\n";
+  const wrapped = `${START}\n${block.trim()}\n${END}`.replace(/\r?\n/g, eol);
   const a = text.indexOf(START);
   const b = text.indexOf(END);
   if (a >= 0 && b > a) {
@@ -64,7 +66,7 @@ function upsertBlock(file, block) {
     writeFileSync(file, next);
     return "updated";
   }
-  writeFileSync(file, text.replace(/\s*$/, "\n\n") + wrapped + "\n");
+  writeFileSync(file, text.replace(/\s*$/, eol + eol) + wrapped + eol);
   return "appended";
 }
 
