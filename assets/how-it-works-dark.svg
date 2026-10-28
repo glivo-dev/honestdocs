@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="250" viewBox="0 0 880 250" role="img" aria-label="People write the reasoning; honestdocs derives progress, files, updated and superseded-by; check fails CI when the set lies.">
+  <title>People write the reasoning; honestdocs derives progress, files, updated and superseded-by; check fails CI when the set lies.</title>
+  <rect x="1" y="18" width="262" height="216" rx="14" fill="#151b23" stroke="#3d444d" stroke-width="1.5"/>
+  <text x="22" y="50" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="1.2" fill="#9198a1">1 · PEOPLE WRITE</text>
+  <text x="22" y="74" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" font-weight="700" fill="#e6edf3">What only people know</text>
+  <text x="22" y="108" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" fill="#e6edf3">title · status</text>
+  <text x="22" y="133" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" fill="#e6edf3">supersedes · related</text>
+  <text x="22" y="164" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" fill="#9198a1">and the words: the reasoning,</text>
+  <text x="22" y="189" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" fill="#9198a1">what was rejected, and why</text>
+  <path d="M272 126H300M294 120L300 126L294 132" fill="none" stroke="#9198a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="309" y="18" width="262" height="216" rx="14" fill="#151b23" stroke="#4ade80" stroke-width="2"/>
+  <text x="330" y="50" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="1.2" fill="#4ade80">2 · HONESTDOCS DERIVES</text>
+  <text x="330" y="74" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" font-weight="700" fill="#e6edf3">What nobody should type</text>
+  <text x="330" y="108" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" fill="#e6edf3">progress</text>
+  <text x="443" y="108" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#9198a1">← the checklist</text>
+  <text x="330" y="133" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" fill="#e6edf3">files</text>
+  <text x="443" y="133" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#9198a1">← commit trailers</text>
+  <text x="330" y="158" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" fill="#e6edf3">updated</text>
+  <text x="443" y="158" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#9198a1">← git history</text>
+  <text x="330" y="183" font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" fill="#e6edf3">superseded-by</text>
+  <text x="443" y="183" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#9198a1">← the newer doc</text>
+  <path d="M580 126H608M602 120L608 126L602 132" fill="none" stroke="#9198a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="617" y="18" width="262" height="216" rx="14" fill="#151b23" stroke="#3d444d" stroke-width="1.5"/>
+  <text x="638" y="50" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="1.2" fill="#9198a1">3 · CHECK GUARDS</text>
+  <text x="638" y="74" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" font-weight="700" fill="#e6edf3">CI fails when it lies</text>
+  <text x="638" y="108" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" fill="#9198a1">a replaced doc still current</text>
+  <text x="638" y="133" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" fill="#9198a1">a checklist count gone stale</text>
+  <text x="638" y="158" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" fill="#9198a1">a rule's named test deleted</text>
+  <text x="638" y="183" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" fill="#9198a1">a link to a doc that is gone</text>
+  <text x="638" y="208" font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" fill="#9198a1">an index out of date</text>
+</svg>

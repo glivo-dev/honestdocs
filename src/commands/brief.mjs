@@ -20,7 +20,7 @@ from a week away, or an AI agent with an empty context, reads first.
 
 const daysAgo = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
 
-export function collectBrief(config, { days = 14 } = {}) {
+function collectBrief(config, { days = 14 } = {}) {
   const docs = loadDocs(config).filter((d) => d.hasMeta);
   const pick = (d) => ({ id: d.id, path: `${config.root}/${d.rel}`, title: d.meta.title, type: d.meta.type, status: d.meta.status });
   const since = daysAgo(days);

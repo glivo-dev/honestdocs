@@ -17,14 +17,39 @@ describe("init", () => {
     p = project();
     const r = p.run(["init", "--agents", "--skill"]);
     assert.equal(r.code, 0, r.stderr);
-    for (const f of ["honestdocs.config.json", "devdocs/README.md", "devdocs/INDEX.md", "AGENTS.md", ".claude/skills/honestdocs/SKILL.md"]) {
+    for (const f of [".honestdocs/config.json", ".honestdocs/README.md", ".honestdocs/INDEX.md", "AGENTS.md", ".claude/skills/honestdocs/SKILL.md"]) {
       assert.ok(existsSync(join(p.dir, f)), f);
     }
-    const rules = readdirSync(join(p.dir, "devdocs/rules"));
+    assert.ok(!existsSync(join(p.dir, "honestdocs.config.json")), "nothing added at the top of the project");
+    const rules = readdirSync(join(p.dir, ".honestdocs/rules"));
     assert.equal(rules.length, 1);
     assert.match(rules[0], /^\d{4}-\d{2}-\d{2}-before-you-build\.md$/);
+    assert.match(p.read("AGENTS.md"), /in\s+`\.honestdocs\/`/);
     const c = p.run(["check", "--json"]);
     assert.equal(c.code, 0, c.stdout);
+    // Every command finds the project from inside the documents folder too.
+    assert.equal(p.run(["brief"], join(p.dir, ".honestdocs/rules")).code, 0);
+  });
+
+  test("leaves a folder of the user's own documents alone", () => {
+    p = project();
+    p.write("devdocs/notes.md", "# Mine\n");
+    assert.equal(p.run(["init", "--root", "devdocs"]).code, 1);
+    assert.equal(p.read("devdocs/notes.md"), "# Mine\n");
+    assert.ok(!existsSync(join(p.dir, "honestdocs.config.json")));
+    // Another folder works, and its config goes to the top of the project.
+    assert.equal(p.run(["init", "--root", "docs/dev"]).code, 0);
+    assert.equal(JSON.parse(p.read("honestdocs.config.json")).root, "docs/dev");
+    assert.ok(existsSync(join(p.dir, "docs/dev/INDEX.md")));
+  });
+
+  test("two configs in one project is an error, not a guess", () => {
+    p = project();
+    p.run(["init"]);
+    config(p);
+    const r = p.run(["brief"]);
+    assert.equal(r.code, 1);
+    assert.match(r.stderr, /two configs/);
   });
 
   test("refuses to run twice, but refreshes the agents block in place", () => {
@@ -110,6 +135,21 @@ describe("index", () => {
     if (short.toLowerCase() === p.dir.toLowerCase()) return; // 8.3 names are off on this volume
     assert.equal(p.run(["index"], short).code, 0);
     assert.deepEqual(meta("devdocs/general/2026-01-01-a.md").files, ["src/a.js"]);
+  });
+
+  test("files follow renames, so documents still count as documents after their folder moves", () => {
+    p = project();
+    config(p);
+    p.commit("setup");
+    doc(p, "general", "2026-01-01-a");
+    p.write("src/old-name.js", "x");
+    p.commit("work\n\nDoc: 2026-01-01-a");
+    p.git(["mv", "devdocs", "docs-dev"]);
+    p.git(["mv", "src/old-name.js", "src/new-name.js"]);
+    p.write("honestdocs.config.json", JSON.stringify({ root: "docs-dev", areas: { general: "", rules: "" } }));
+    p.commit("move");
+    p.run(["index"]);
+    assert.deepEqual(meta("docs-dev/general/2026-01-01-a.md").files, ["src/new-name.js"]);
   });
 
   test("counts the checklist and marks a replaced document", () => {
@@ -326,6 +366,24 @@ describe("layouts", () => {
 
     assert.equal(p.run(["index"]).code, 0);
     const m = meta(".devdocs/general/2026-01-01-a.md");
+    assert.deepEqual(m.files, ["src/app.js"]);
+    assert.equal(m.updated, "2026-02-02");
+  });
+
+  test("the default .honestdocs/ as a private repository inside the code needs no extra config", () => {
+    p = project();
+    p.write(".gitignore", ".honestdocs/\n");
+    p.write("src/app.js", "x");
+    p.commit("init");
+    assert.equal(p.run(["init"]).code, 0);
+    const docs = join(p.dir, ".honestdocs");
+    p.git(["init", "-q", "-b", "main"], docs);
+    const id = p.run(["new", "general", "a", "--title", "A", "--json"]).json().id;
+    p.commit("docs", { cwd: docs, date: "2026-02-02T10:00:00" });
+    p.write("src/app.js", "y");
+    p.commit(`work\n\nDoc: ${id}`);
+    assert.equal(p.run(["index"]).code, 0);
+    const m = meta(`.honestdocs/general/${id}.md`);
     assert.deepEqual(m.files, ["src/app.js"]);
     assert.equal(m.updated, "2026-02-02");
   });

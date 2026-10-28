@@ -1,19 +1,76 @@
-# honestdocs
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
+    <img src="assets/logo-light.svg" alt="honestdocs" width="422">
+  </picture>
+</p>
 
-**Development documents that git keeps honest.**
+<h3 align="center">Development documents that stay true.</h3>
 
-Every project accumulates decisions, designs, plans, research and postmortems. They are
-its long-term memory — for the colleague who joins next year, for you in three months,
-and for the AI agent that starts every session knowing nothing. And they rot: a plan says
-"in progress" a year after it shipped, a design that was replaced still reads as current,
-the "related files" list stopped being true the week it was written. Someone builds from
-the wrong one.
+<p align="center">
+  Decisions, designs, plans, research, postmortems and standing rules —<br>
+  kept honest for the people on your team and the AI agents working beside them.
+</p>
 
-honestdocs is a small CLI and a method that stop that. People write the parts only people
-know — the reasoning, what was rejected, the status. Everything else is **derived**:
-progress from the checklist, the files a document's work touched from git commit
-trailers, which document replaced which, when it last changed. A `check` in CI fails when
-the set starts to lie.
+<p align="center">
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-16a34a"></a>
+  <img alt="Node 20+ or Bun" src="https://img.shields.io/badge/node-%E2%89%A520%20%C2%B7%20bun-1f2328">
+  <img alt="Zero dependencies" src="https://img.shields.io/badge/dependencies-0-1f2328">
+  <img alt="Windows, macOS, Linux" src="https://img.shields.io/badge/os-windows%20%C2%B7%20macos%20%C2%B7%20linux-1f2328">
+</p>
+
+---
+
+A project's development documents are its long-term memory — for the colleague who joins
+next year, for you in three months, for the AI agent that starts every session knowing
+nothing. And they rot. A plan says *in progress* a year after it shipped. A design that was
+replaced still reads as current. The "related files" list stopped being true the week it
+was written. Someone builds from the wrong one.
+
+**honestdocs** is a small CLI and a ten-rule method that stop that. People write only what
+people know. The tool works out the rest, and fails CI the moment the set starts to lie.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/how-it-works-dark.svg">
+    <img src="assets/how-it-works-light.svg" alt="People write title, status, supersedes, related and the reasoning. honestdocs derives progress from the checklist, files from commit trailers, updated from git history, superseded-by from the newer document. check fails CI when the set lies." width="880">
+  </picture>
+</p>
+
+Plain Markdown in your repository. No server, no database, no dependencies.
+
+## Quick start
+
+```sh
+npx honestdocs init --agents
+```
+
+That creates `.honestdocs/` — its config, a README, a first rule document and an index —
+and adds a short section to `AGENTS.md` so your AI agents follow the method too. Nothing
+else in your project is touched.
+
+```sh
+npx honestdocs new general token-rotation --type plan --title "Token rotation"
+```
+
+Do the work. When you commit it, add one line naming the document:
+
+```sh
+git commit -m "Rotate tokens on refresh" -m "Doc: 2026-11-02-token-rotation"
+```
+
+Then let the tool keep the record straight:
+
+```sh
+npx honestdocs index        # work out progress, files, superseded-by, updated; rebuild INDEX.md
+npx honestdocs check        # exit 1 if anything in the set lies
+npx honestdocs done 2026-11-02-token-rotation
+```
+
+## What you get back
+
+**Where things stand, in one page** — what a person back from a week away, or an agent
+with an empty context, reads first:
 
 ```text
 $ honestdocs brief
@@ -28,38 +85,20 @@ Planned — re-check against the code before building
   📋 2026-10-20-audit-log — Audit log for admin actions
 
 Rules in force — read the ones a change touches before building
-  devdocs/rules/2026-09-01-before-you-build.md — Before you build: B1…B4 (4)
-  devdocs/rules/2026-09-14-security.md — Security rules: SEC1…SEC9 (9)
+  .honestdocs/rules/2026-09-01-before-you-build.md — Before you build: B1…B4 (4)
+  .honestdocs/rules/2026-09-14-security.md — Security rules: SEC1…SEC9 (9)
 ```
 
-Zero dependencies. Node 20+ or Bun. Plain Markdown in your repository.
+**What was already tried, and why it lost** — superseded and abandoned documents included,
+because that is where the rejected ideas live:
 
-## Quick start
-
-```sh
-npx honestdocs init --agents          # config, devdocs/, a first rule document, INDEX.md,
-                                      # and a section in AGENTS.md for your AI agents
-npx honestdocs new general token-rotation --type plan --title "Token rotation"
+```text
+$ honestdocs search redis --section alternatives
+🔧 .honestdocs/billing/2026-10-03-rate-limits.md — Rate limits
+    § Alternatives considered: Redis counters were rejected: one more service to run…
 ```
 
-Work on it. Commit the work with a trailer naming the document:
-
-```sh
-git commit -m "Rotate tokens on refresh" -m "Doc: 2026-11-02-token-rotation"
-```
-
-Keep it honest:
-
-```sh
-npx honestdocs index      # derive progress, files, superseded-by, updated; regenerate INDEX.md
-npx honestdocs check      # exit 1 if anything in the set lies
-npx honestdocs done 2026-11-02-token-rotation
-```
-
-Add it to `package.json` if you like — `"docs:check": "honestdocs check"` — or install it
-globally. Everything below works the same through `npx`, `bunx` or a global install.
-
-## What a document looks like
+**A document whose bookkeeping does itself:**
 
 ```markdown
 ---
@@ -69,40 +108,35 @@ area: auth
 type: plan
 status: in-progress
 created: 2026-11-02
-updated: 2026-11-05          ← derived from git
+updated: 2026-11-05            ← from git
 completed:
-progress: 3/5                ← derived from the checklist
+progress: 3/5                  ← from the checklist
 supersedes: [2026-06-10-long-lived-tokens]
-superseded-by:               ← derived from the newer document
+superseded-by:                 ← from the newer document
 related: [2026-10-20-audit-log]
-files: [src/auth/refresh.ts, src/auth/tokens.ts]   ← derived from commit trailers
+files: [src/auth/refresh.ts, src/auth/tokens.ts]   ← from commits naming this document
 ---
 # Token rotation
 
 ## Context
 ## Goals / Non-goals
 ## Decision
-## Alternatives considered     ← what lost, and why
+## Alternatives considered       ← what lost, and why
 ## Checklist
-- [x] Issue a new refresh token on every refresh
-…
 ## Verification
-## Log                         ← the hand-over to the next session
+## Log                           ← the hand-over to the next session
 ```
-
-People write four fields: `title`, `status`, `supersedes`, `related`. The rest is the
-tool's job, because **a field someone has to remember to update will be wrong.**
 
 ## The method
 
-Ten rules, short enough to remember — `honestdocs guide` prints them in full.
+Ten rules, short enough to remember. `honestdocs guide` prints them in full.
 
 | | |
 |---|---|
-| **D1** The code is the truth | Where a document and the code disagree, believe the code, then fix the document's status. |
-| **D2** Derive what can be derived | People write title, status, supersedes, related. Nothing else. |
+| **D1** The code is the truth | Where a document and the code disagree, believe the code — then correct the document. |
+| **D2** Derive what can be derived | People write `title`, `status`, `supersedes`, `related`. A field someone must remember to update will be wrong. |
 | **D3** Write it down before building | Non-trivial work starts with a design, plan or research document. |
-| **D4** Commits name their document | `Doc: <id>` — the one link between docs and code that cannot drift. |
+| **D4** Commits name their document | `Doc: <id>` — the one link between documents and code that cannot drift. |
 | **D5** Write down what was rejected | *Alternatives considered* stops the same argument — and the same AI suggestion — coming back. |
 | **D6** Replace from the newer side | `supersedes:` in the new document; the old one is marked for you. |
 | **D7** Close honestly | Unticked boxes are explained, not ignored. Abandoned work keeps its reasons. |
@@ -114,108 +148,145 @@ Ten rules, short enough to remember — `honestdocs guide` prints them in full.
 
 | Kind | Types | Lifecycle |
 |---|---|---|
-| **Work** — gets done, then finished | `research` `design` `plan` `decision` `postmortem` | `draft → planned → in-progress → done` · `abandoned` · `superseded` |
+| **Work** — gets done, then is finished | `research` `design` `plan` `decision` `postmortem` | `draft → planned → in-progress → done` · `abandoned` · `superseded` |
 | **Living** — true now, kept true | `reference` `rule` | `draft → current → retired` · `superseded` |
 
-A standing rule is never "done", and forcing it through a work lifecycle leaves it in
-`draft` forever while everyone follows it. So living documents have their own.
+A standing rule is never "done". Forced through a work lifecycle, it sits in `draft` forever
+while everyone follows it — so living documents get their own.
 
-### Rules, and the tests that prove them
+### Rules that prove themselves
 
-`rules/` holds what every change must keep — security, public APIs, migrations, whatever
-your project forgets when nobody is looking. Rules are numbered so a review can cite them,
-and a rule names the test that proves it:
+`.honestdocs/rules/` holds what every change must keep: security, public APIs, migrations —
+whatever your project forgets when nobody is looking. Rules are numbered so a review can
+cite them, and each names the test that proves it:
 
 ```markdown
 - **SEC3** Every route checks the item it names, not just the caller.
   Test: `tests/routes/item-scope.test.ts`
 ```
 
-`honestdocs check` fails if `tests/routes/item-scope.test.ts` no longer exists.
-`honestdocs rules` lists every rule in force; `init` starts you with a *before you build*
-checklist that sends each kind of change to the rules that govern it.
+If that test file disappears, `honestdocs check` fails. `init` starts you with a *before you
+build* checklist that sends each kind of change to the rules that govern it.
+
+## Built for AI agents
+
+The documents matter most to the reader with the least memory. `init --agents` writes a
+section into `AGENTS.md` (or `--agents-file CLAUDE.md`), and `init --skill` installs the
+same instructions as a skill. An agent that follows them:
+
+1. runs `honestdocs brief` when a session starts;
+2. `search`es before proposing a design — with `--section alternatives`, so it does not
+   bring back what was rejected — and reads the rules a change touches;
+3. opens a document for non-trivial work and puts `Doc: <id>` in its commits;
+4. never writes the derived fields; closes with `done` and `check`.
+
+Every query takes `--json`. Data goes to stdout, everything else to stderr.
+
+> **Memory or documents?** Agents and people keep notes of their own. Preferences and habits
+> belong there. Decisions about the project belong in the documents, where every person and
+> every future session reads the same thing — a memory entry about the project should point
+> to the document, not copy it.
 
 ## Commands
 
 | Command | |
 |---|---|
-| `init` | Set up: config, documents folder, first rule document, INDEX.md. `--agents` writes the AGENTS.md section, `--skill` installs the agent skill. |
+| `init` | Set up `.honestdocs/`. `--agents` writes the AGENTS.md section, `--skill` installs the skill; both refresh in place when run again. |
 | `new <area> <slug> --title …` | Start a document from its type's template. Prints the path. |
-| `index` | Derive the derived fields and regenerate `INDEX.md`. |
+| `index` | Work out the derived fields and rebuild `INDEX.md`. |
 | `check` | Validate everything; exit 1 on errors. `--fix` corrects the mechanical ones. |
 | `done <id>` | Close a work document. Refuses unticked items unless `--force`; `--abandoned` for dropped work. |
-| `status <id> <status>` | Move a document — e.g. a rule to `current`, or `retired`. |
+| `status <id> <status>` | Move a document — a rule to `current`, a reference to `retired`. |
 | `brief` | One page: in progress with next items, planned, recently changed, rules in force. |
-| `search <words…>` | Search every document, superseded and abandoned included. `--section alternatives` shows what was rejected. |
+| `search <words…>` | Every document, superseded and abandoned included. `--section alternatives` for what was rejected. |
 | `rules [prefix]` | The numbered rules in force, with their tests. |
 | `promote <id> --to <path>` | Start a public document from a development one — headings only, on purpose. |
 | `guide [method\|agents\|skill]` | Print the method, the agents section or the skill. |
 
-Every query takes `--json`. Diagnostics go to stderr; stdout carries only data.
+<details>
+<summary><b>What <code>check</code> treats as an error</b></summary>
 
-### What `check` treats as an error
-
-- frontmatter missing; an id that does not match its filename; duplicate ids
+- frontmatter missing; an id that does not match its filename; two documents with one id
 - an area, type or status outside the config — or a status the type's lifecycle lacks
 - a document in one area's folder claiming another area
 - `supersedes` or `related` pointing at nothing
 - a superseded document that still claims to be in force
 - a checklist count, or `superseded-by`, never recomputed
 - a rule naming a test that does not exist; two rules with one id
-- `INDEX.md` not regenerated since the frontmatter changed
+- `INDEX.md` not rebuilt since the frontmatter changed
 
-A commit that names a document makes its `files` and `updated` out of date by
-definition — git's answer moves with every commit — so those are warnings, settled by the
-next `index`, never a reason for CI to fail.
+A commit that names a document moves that document's `files` and `updated` by definition,
+so those are warnings, settled by the next `index` — never a reason for CI to fail.
 
-## Working with AI agents
+</details>
 
-The documents are most valuable to the reader with the least memory. `init --agents` adds
-a section to `AGENTS.md` (or `--agents-file CLAUDE.md`) that tells an agent to:
+<details>
+<summary><b>How git is used</b></summary>
 
-1. run `honestdocs brief` when a session starts;
-2. `search` before proposing a design — including `--section alternatives`, so it does not
-   re-propose what was rejected — and read the rules a change touches;
-3. open a document for non-trivial work and put `Doc: <id>` in its commits;
-4. never write the derived fields; close with `done` and `check`.
+Two of the derived fields come from history, because history is the one record nobody
+edits after the fact:
 
-`init --skill` installs the same instructions as a skill at
-`.claude/skills/honestdocs/SKILL.md`. Re-running either refreshes it in place.
+- **`files`** — every commit whose message carries `Doc: <id>` contributes the files it
+  changed. Several ids per commit are fine, comma-separated or one per line. The match is on
+  the whole id, and paths follow later renames, so a file is listed by the name it has now.
+- **`updated`** — the last commit that changed the document's content. Moving a folder of
+  documents is not an edit and does not restamp them.
 
-**Memory versus documents.** Agents and people keep notes of their own. Preferences and
-habits belong there. Decisions about the project belong in the documents, where every
-person and every future session reads the same thing — a memory entry about the project
-should point to the document, not copy it.
+Everything else — progress, superseded-by, every check — works from the files alone.
+Outside a repository, or in a shallow clone, honestdocs says so and leaves the two git
+fields as they are rather than writing a wrong answer.
+
+</details>
 
 ## Layouts
 
-**Same repository** (the default): documents in `devdocs/` next to the code.
+<details>
+<summary><b>Same repository</b> — the default</summary>
 
-**A separate documents repository**, nested in the code and ignored by it — useful when
-the code is public and the design discussion is not:
+`.honestdocs/` sits next to your code and is committed with it. Its config is
+`.honestdocs/config.json`.
+
+</details>
+
+<details>
+<summary><b>A private documents repository inside public code</b></summary>
+
+When the code is open and the design discussion is not: add `.honestdocs/` to the code's
+`.gitignore` and `git init` inside it. Dates then come from the documents' repository, and
+`files` from the code's (`"codeRepos": [".."]` is not needed — paths are read from the
+project folder that holds `.honestdocs/`).
+
+</details>
+
+<details>
+<summary><b>Several code repositories, one set of documents</b></summary>
+
+For a workspace of sibling repositories:
 
 ```json
-{ "root": ".devdocs", "codeRepos": ["."] }
-```
-
-with `.devdocs/` in the code repository's `.gitignore` and its own `git init`. Dates come
-from the documents' repository; files from the code's.
-
-**Several code repositories, one documents set** — a workspace of sibling repositories:
-
-```json
-{ "root": "devdocs", "codeRepos": ["app", "web", "plugins"] }
+{ "codeRepos": ["app", "web", "plugins"] }
 ```
 
 Files are then listed as `app/src/x.ts`, `web/src/x.ts`.
 
+</details>
+
+<details>
+<summary><b>Documents somewhere else</b></summary>
+
+`honestdocs init --root docs/dev` keeps them in `docs/dev/` and puts the config at the top
+of the project as `honestdocs.config.json`. `init` refuses a folder that already holds
+Markdown, so your own documents are never overwritten.
+
+</details>
+
 ## Configuration
 
-`honestdocs.config.json`, found by walking up from the current directory:
+<details>
+<summary><code>.honestdocs/config.json</code></summary>
 
 ```jsonc
 {
-  "root": "devdocs",                      // the documents folder
   "title": "Development documents",       // heading of INDEX.md
   "areas": {                              // folder → what belongs there
     "general": "Anything not yet in a narrower area",
@@ -223,21 +294,24 @@ Files are then listed as `app/src/x.ts`, `web/src/x.ts`.
   },
   "trailer": "Doc",                       // the commit trailer key
   "codeRepos": ["."],                     // where trailer commits are read from
-  "templates": "devdocs/_templates",      // optional: your own <type>.md templates
+  "templates": ".honestdocs/_templates",  // optional: your own <type>.md templates
   "types": {                              // optional: add or remove types
     "rfc": { "lifecycle": "work", "description": "A proposal for review" },
     "postmortem": false
   },
-  "recent": 25                            // rows in INDEX.md's "Recently changed"
+  "recent": 25,                           // rows in INDEX.md's "Recently changed"
+  "root": ".honestdocs"                   // where the documents live (with a top-level config)
 }
 ```
 
-Templates may use `{{title}}`, `{{id}}` and `{{date}}`. Bodies can be written in any
-language; filenames and frontmatter stay in plain ASCII so every tool can read them.
+Templates may use `{{title}}`, `{{id}}` and `{{date}}`. Write the bodies in any language;
+filenames and frontmatter stay plain ASCII so every tool can read them.
+
+</details>
 
 ## In CI
 
-Derived fields need history, so check out the whole of it:
+`files` and `updated` need history, so check out all of it:
 
 ```yaml
 - uses: actions/checkout@v4
@@ -249,26 +323,23 @@ Derived fields need history, so check out the whole of it:
 - run: npx honestdocs check
 ```
 
-In a shallow clone honestdocs says so and skips everything it would derive from git,
-rather than writing a wrong answer.
-
 ## How it relates to other tools
 
-- **ADR tools** (adr-tools, log4brains, MADR): honestdocs's `decision` template follows
-  MADR, so ADRs fit in as one type among several. What it adds is the other kinds of
-  document, the lifecycles, and fields derived from git instead of maintained by hand.
-- **Spec-driven development kits** (Spec Kit, OpenSpec, …): they structure what an agent
-  is told *before* it writes code. honestdocs keeps the record true *after* — what was
-  decided, what was rejected, what shipped, what was replaced. They work side by side.
-- **Big-project processes** (RFCs, PEPs, KEPs): the same idea at a smaller scale, without
-  the metadata somebody has to keep in sync by hand.
+- **ADR tools** — adr-tools, log4brains, the MADR template. honestdocs's `decision`
+  template follows MADR, so ADRs fit in as one type among several. It adds the other kinds of
+  document, two lifecycles, and fields that are worked out instead of maintained.
+- **Spec-driven kits** — Spec Kit, OpenSpec and others shape what an agent is told *before*
+  it writes code. honestdocs keeps the record true *after*: what was decided, what was
+  rejected, what shipped, what was replaced. They work side by side.
+- **RFC, PEP and KEP processes** — the same idea at project scale, without the metadata
+  somebody has to keep in sync by hand.
 
 ## Where it comes from
 
-honestdocs was built while making [Glivo](https://github.com/glivo-dev), a desktop
-automation app developed with AI coding agents, where a few hundred development documents
-had to stay trustworthy for people and agents alike. This is that system, made general.
+honestdocs was built while making [Glivo](https://github.com/glivo-dev), a desktop automation
+app developed alongside AI coding agents, where a few hundred development documents had to
+stay trustworthy for people and agents alike. This is that system, made general.
 
 ## License
 
-MIT
+[MIT](LICENSE)

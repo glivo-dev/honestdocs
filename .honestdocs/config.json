@@ -1,5 +1,4 @@
 {
-  "root": "devdocs",
   "title": "honestdocs · development documents",
   "areas": {
     "core": "The CLI: commands, derivation, checks, layouts",

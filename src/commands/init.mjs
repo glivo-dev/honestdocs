@@ -1,7 +1,7 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { c, die, ok, parseArgs, say } from "../cli.mjs";
-import { CONFIG_FILE, DEFAULT_AREAS, findConfig, loadConfig } from "../config.mjs";
+import { CONFIG_FILE, CONFIG_IN_ROOT, DEFAULT_AREAS, DEFAULT_ROOT, findConfig, loadConfig } from "../config.mjs";
 import { today } from "../docs.mjs";
 import { stringify } from "../frontmatter.mjs";
 import { fill, packageFile } from "../templates.mjs";
@@ -14,10 +14,13 @@ export const help = `honestdocs init — ${summary}
   honestdocs init [--root <dir>] [--area <name[=description]>]… [--code-repo <path>]…
                   [--title <text>] [--agents] [--agents-file <file>] [--skill]
 
-Creates ${CONFIG_FILE}, the documents folder with a README, a first rule
-document (rules/…-before-you-build.md), and INDEX.md.
+Creates ${DEFAULT_ROOT}/ with its config, a README, a first rule document
+(rules/…-before-you-build.md) and INDEX.md. Refuses a folder that already
+holds Markdown files — your own docs stay yours.
 
-  --root <dir>          the documents folder (default: devdocs)
+  --root <dir>          the documents folder (default: ${DEFAULT_ROOT}). With
+                        any other folder the config goes to ${CONFIG_FILE}
+                        at the top of the project instead.
   --area <name>         an area; repeat for more (default: general, rules).
                         "rules" is always added.
   --code-repo <path>    where commits carrying the trailer are read from
@@ -34,11 +37,19 @@ Run again in a project that is already set up, --agents and --skill refresh
 those two and change nothing else.
 `;
 
+function hasMarkdown(dir) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === ".git" || entry.name === "node_modules") continue;
+    if (entry.isDirectory() ? hasMarkdown(join(dir, entry.name)) : entry.name.endsWith(".md")) return true;
+  }
+  return false;
+}
+
 const START = "<!-- honestdocs:start -->";
 const END = "<!-- honestdocs:end -->";
 
 /** Insert or replace the marked block, leaving everything else in the file alone. */
-export function upsertBlock(file, block) {
+function upsertBlock(file, block) {
   const wrapped = `${START}\n${block.trim()}\n${END}`;
   if (!existsSync(file)) {
     writeFileSync(file, wrapped + "\n");
@@ -83,13 +94,17 @@ export function run(argv) {
   if (existing) {
     const config = loadConfig(cwd);
     if (!args.agents && !args["agents-file"] && !args.skill) {
-      die(`already set up: ${existing} — re-run with --agents or --skill to refresh those`);
+      die(`already set up: ${existing.file} — re-run with --agents or --skill to refresh those`);
     }
     installAgentBits(config.base, args, config.root, config.trailer);
     return;
   }
 
-  const root = (args.root ?? "devdocs").replace(/[\\/]+$/, "");
+  const root = (args.root ?? DEFAULT_ROOT).replace(/[\\/]+$/, "").replace(/^\.[\\/]/, "");
+  const target = resolve(cwd, root);
+  if (existsSync(target) && hasMarkdown(target)) {
+    die(`${root}/ already holds Markdown files — choose another folder with --root`);
+  }
   const areas = {};
   for (const spec of args.area.length ? args.area : Object.keys(DEFAULT_AREAS)) {
     const [name, ...rest] = spec.split("=");
@@ -104,8 +119,10 @@ export function run(argv) {
     trailer: "Doc",
     codeRepos: args["code-repo"].length ? args["code-repo"] : ["."],
   };
-  writeFileSync(join(cwd, CONFIG_FILE), JSON.stringify(raw, null, 2) + "\n");
-  ok(CONFIG_FILE);
+  const configPath = root === DEFAULT_ROOT ? CONFIG_IN_ROOT : CONFIG_FILE;
+  mkdirSync(dirname(join(cwd, configPath)), { recursive: true });
+  writeFileSync(join(cwd, configPath), JSON.stringify(raw, null, 2) + "\n");
+  ok(configPath);
 
   const config = loadConfig(cwd);
   mkdirSync(join(config.docsDir, "rules"), { recursive: true });

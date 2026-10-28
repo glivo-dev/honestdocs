@@ -10,6 +10,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, isAbsolute, join, resolve } from "node:path";
 import { Failure } from "./cli.mjs";
 
+/** The default home: documents and config together, out of the way of the project's own folders. */
+export const DEFAULT_ROOT = ".honestdocs";
+export const CONFIG_IN_ROOT = `${DEFAULT_ROOT}/config.json`;
+/** For a project that keeps its documents somewhere else, the config sits at the top. */
 export const CONFIG_FILE = "honestdocs.config.json";
 
 /**
@@ -38,7 +42,7 @@ export const LIFECYCLES = {
   },
 };
 
-export const DEFAULT_TYPES = {
+const DEFAULT_TYPES = {
   research: { lifecycle: "work", description: "A question and what was found out, with sources" },
   design: { lifecycle: "work", description: "How something should work, decided before building it" },
   plan: { lifecycle: "work", description: "A sequence of work with a checklist that drives progress" },
@@ -53,12 +57,19 @@ export const DEFAULT_AREAS = {
   rules: "Standing rules every change must keep — read before building, updated in place",
 };
 
-/** Walk up from `start` to the nearest directory holding the config file. */
+/**
+ * Walk up from `start` to the nearest project: a folder holding `.honestdocs/config.json`
+ * or `honestdocs.config.json`. Returns `{ file, base }` — `base` is the project folder,
+ * which every relative path in the config is read against — or null.
+ */
 export function findConfig(start = process.cwd()) {
   let dir = resolve(start);
   for (;;) {
-    const candidate = join(dir, CONFIG_FILE);
-    if (existsSync(candidate)) return candidate;
+    const found = [join(dir, CONFIG_IN_ROOT), join(dir, CONFIG_FILE)].filter((f) => existsSync(f));
+    if (found.length > 1) {
+      throw new Failure(`two configs in ${dir}: ${CONFIG_IN_ROOT} and ${CONFIG_FILE} — keep one`);
+    }
+    if (found.length) return { file: found[0], base: dir };
     const parent = dirname(dir);
     if (parent === dir) return null;
     dir = parent;
@@ -70,20 +81,20 @@ export function findConfig(start = process.cwd()) {
  * command ever has to think about where it was started from.
  */
 export function loadConfig(start = process.cwd()) {
-  const file = findConfig(start);
-  if (!file) throw new Failure(`no ${CONFIG_FILE} here or above — run \`honestdocs init\` first`);
+  const found = findConfig(start);
+  if (!found) throw new Failure(`no ${CONFIG_IN_ROOT} here or above — run \`honestdocs init\` first`);
   let raw;
   try {
-    raw = JSON.parse(readFileSync(file, "utf8"));
+    raw = JSON.parse(readFileSync(found.file, "utf8"));
   } catch (e) {
-    throw new Failure(`${file} is not valid JSON: ${e.message}`);
+    throw new Failure(`${found.file} is not valid JSON: ${e.message}`);
   }
-  return normalise(raw, dirname(file), file);
+  return normalise(raw, found.base, found.file);
 }
 
-export function normalise(raw, base, file = join(base, CONFIG_FILE)) {
+function normalise(raw, base, file = join(base, CONFIG_FILE)) {
   const problems = [];
-  const root = typeof raw.root === "string" && raw.root ? raw.root : "devdocs";
+  const root = typeof raw.root === "string" && raw.root ? raw.root : DEFAULT_ROOT;
 
   const areas = raw.areas && typeof raw.areas === "object" ? raw.areas : DEFAULT_AREAS;
   if (!Object.keys(areas).length) problems.push("`areas` is empty — a document needs somewhere to live");

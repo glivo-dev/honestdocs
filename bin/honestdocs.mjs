@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// honestdocs — development documents that git keeps honest.
+// honestdocs — development documents that stay true.
 
 import { Failure, UsageError, c } from "../src/cli.mjs";
 import { packageFile } from "../src/templates.mjs";
@@ -10,7 +10,7 @@ const load = (name) => import(`../src/commands/${name}.mjs`);
 
 async function usage() {
   const lines = [
-    "honestdocs — development documents that git keeps honest",
+    "honestdocs — development documents that stay true",
     "",
     "  honestdocs <command> [options]      honestdocs <command> --help for more",
     "",

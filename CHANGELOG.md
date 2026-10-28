@@ -15,3 +15,8 @@ First version.
 - Agent support: `init --agents` (AGENTS.md section, refreshed in place), `init --skill`,
   `brief`, and `--json` on every query.
 - Layouts: same repository, a nested documents repository, several code repositories.
+- Documents and config live in `.honestdocs/` by default (`.honestdocs/config.json`);
+  `--root` puts them elsewhere with `honestdocs.config.json` at the top. `init` refuses a
+  folder that already holds Markdown.
+- Paths in `files` follow later renames, so they show current names and moving the
+  documents folder does not leak old document paths.

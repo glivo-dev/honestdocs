@@ -16,7 +16,7 @@ lists its numbered rules. Give a prefix — R, SEC — to see one family.
   --json   the full list on stdout
 `;
 
-export function collectRules(config, { all = false, prefix = "" } = {}) {
+function collectRules(config, { all = false, prefix = "" } = {}) {
   return loadDocs(config)
     .filter((d) => d.hasMeta && d.meta.type === "rule")
     .filter((d) => all || d.meta.status === "current" || d.meta.status === "draft")

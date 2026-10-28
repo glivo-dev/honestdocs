@@ -58,7 +58,7 @@ export function parse(raw) {
   return { meta, body: raw.slice(m[0].length) };
 }
 
-export const KEY_ORDER = [
+const KEY_ORDER = [
   "id", "title", "area", "type", "status", "legacy",
   "created", "updated", "completed", "progress",
   "supersedes", "superseded-by", "related", "files",

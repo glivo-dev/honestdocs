@@ -12,11 +12,9 @@ const paint = (code) => (s) => (useColour() ? `\x1b[${code}m${s}\x1b[0m` : Strin
 
 export const c = {
   dim: paint(2),
-  bold: paint(1),
   red: paint(31),
   green: paint(32),
   yellow: paint(33),
-  cyan: paint(36),
 };
 
 export const say = (msg = "") => console.error(msg);

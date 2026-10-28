@@ -112,18 +112,22 @@ export function uncommittedFiles(dir) {
  * may name several, on several lines or comma-separated. The match is on the whole id:
  * `Doc: 2026-11-02-auth` must not count as a commit for `2026-11-02-auth-tokens`.
  *
- * `exclude` is a path prefix (relative to the repository) whose files are left out — the
- * documents folder itself, when it lives in the same repository as the code.
+ * Paths are given as they are named now: a file renamed after the commit is listed under
+ * its new name. That is also what lets `exclude` — the documents folder, when it lives in
+ * the same repository as the code — still recognise documents committed before the folder
+ * was moved.
  */
-export function filesByTrailer(repo, trailer, { exclude = null, prefix = "" } = {}) {
+function filesByTrailer(repo, trailer, { exclude = null, prefix = "" } = {}) {
   const out = git(["log", "-i", "-E", `--grep=^${trailer}:`, `--format=${RS}%B${GS}`, "--name-only"], repo);
+  if (!out) return {};
+  const now = renamesToNow(repo);
   const line = new RegExp(`^${trailer}:[ \\t]*(.+)$`, "gim");
   const result = {};
   for (const chunk of out.split(RS)) {
     const end = chunk.indexOf(GS);
     if (end < 0) continue;
     const message = chunk.slice(0, end);
-    const files = chunk.slice(end + 1).split(/\r?\n/).map((s) => s.trim()).filter(Boolean)
+    const files = chunk.slice(end + 1).split(/\r?\n/).map((s) => now(s.trim())).filter(Boolean)
       .filter((f) => !exclude || !(f === exclude || f.startsWith(exclude + "/")));
     if (!files.length) continue;
     const ids = new Set();
@@ -136,6 +140,21 @@ export function filesByTrailer(repo, trailer, { exclude = null, prefix = "" } = 
     }
   }
   return Object.fromEntries(Object.entries(result).map(([k, v]) => [k, [...v]]));
+}
+
+/**
+ * A function from a path as some commit named it to the path it has today, following
+ * every rename in the history, newest first.
+ */
+function renamesToNow(repo) {
+  const out = git(["log", "-M", "--diff-filter=R", "--name-status", "--format="], repo);
+  const map = new Map();
+  const now = (p) => map.get(p) ?? p;
+  for (const entry of out.split(/\r?\n/)) {
+    const [status, from, to] = entry.split("\t");
+    if (status?.startsWith("R") && from && to) map.set(from, now(to));
+  }
+  return now;
 }
 
 /**

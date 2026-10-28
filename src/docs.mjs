@@ -16,7 +16,7 @@ import { filesForAllDocs, isShallow, lastChangeDates, toplevel, uncommittedFiles
 const NOT_DOCUMENTS = new Set(["INDEX.md", "README.md"]);
 const SKIP_DIRS = new Set([".git", "node_modules", "assets"]);
 
-export const idOf = (file) => basename(file, ".md");
+const idOf = (file) => basename(file, ".md");
 export const today = () => new Date().toISOString().slice(0, 10);
 
 export function slugify(s) {
@@ -24,7 +24,7 @@ export function slugify(s) {
 }
 
 /** Every document file, sorted, as absolute paths. */
-export function listFiles(config) {
+function listFiles(config) {
   const out = [];
   const skip = config.templatesDir;
   const walk = (dir) => {
@@ -40,7 +40,7 @@ export function listFiles(config) {
   return out.sort();
 }
 
-export const relPath = (config, file) => relative(config.docsDir, file).split("\\").join("/");
+const relPath = (config, file) => relative(config.docsDir, file).split("\\").join("/");
 
 /** The area a file sits in, from its folder; null at the top level. */
 export function folderArea(config, file) {

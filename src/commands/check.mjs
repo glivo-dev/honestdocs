@@ -30,7 +30,7 @@ differently (run \`honestdocs index\`), a done document without a date, and so o
   --json   { documents, errors, warnings, fixed } on stdout
 `;
 
-export function runCheck(config, { fix = false } = {}) {
+function runCheck(config, { fix = false } = {}) {
   const docs = loadDocs(config);
   const errors = [];
   const warnings = [];
